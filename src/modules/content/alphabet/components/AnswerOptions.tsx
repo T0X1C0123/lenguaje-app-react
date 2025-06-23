@@ -1,11 +1,11 @@
 "use client"
-import Grid from '@mui/material/Grid';
-// import { Grid } from "@mui/material"
+
+import { Box } from "@mui/material"
 import AnswerCard from "./AnswerCard"
-import type { Option } from "../types"
+import type { QuizOption } from "../types"
 
 interface AnswerOptionsProps {
-  options: Option[]
+  options: QuizOption[]
   selectedOption: number | null
   onSelectOption: (id: number) => void
   onCheckAnswer: () => void
@@ -24,9 +24,45 @@ export default function AnswerOptions({
   correctOptionId,
 }: AnswerOptionsProps) {
   return (
-    <Grid container spacing={2}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        gap: 3,
+        flexWrap: "wrap",
+        maxWidth: "100%",
+        mx: "auto",
+        px: 2,
+        // Responsive behavior
+        flexDirection: {
+          xs: "column", // Stack vertically on extra small screens
+          sm: "row", // Side by side on small screens and up
+        },
+        alignItem: {
+          xs: "center", // Center align when stacked
+          sm: "flex-start", // Top align when side by side
+        },
+      }}
+    >
       {options.map((option) => (
-        <Grid  size={4} key={option.id}>
+        <Box
+          key={option.id}
+          sx={{
+            flex: {
+              xs: "none", // No flex on mobile (full width)
+              sm: "0 0 auto", // Auto width on larger screens
+            },
+            minWidth: {
+              xs: "280px", // Wider on mobile
+              sm: "160px", // Standard width on larger screens
+            },
+            maxWidth: {
+              xs: "320px", // Max width on mobile
+              sm: "160px", // Fixed width on larger screens
+            },
+          }}
+        >
           <AnswerCard
             option={option}
             isSelected={selectedOption === option.id}
@@ -37,8 +73,8 @@ export default function AnswerOptions({
             isCorrect={answered && selectedOption === option.id && selectedOption === correctOptionId}
             isIncorrect={answered && selectedOption === option.id && selectedOption !== correctOptionId}
           />
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   )
 }

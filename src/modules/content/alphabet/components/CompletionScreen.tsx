@@ -24,23 +24,21 @@ export default function CompletionScreen({ score, livesRemaining, onRestart }: C
           gap: 4,
         }}
       >
-        <Trophy size={80} color={isPerfect ? "#FFD700" : "#C0C0C0"} />
-
+        <Trophy size={80} color={isPerfect ? "#d69e2e" : "#a0aec0"} /> {/* CAMBIO: Colores más suaves */}
         <Typography variant="h4" component="h1" sx={{ fontWeight: "bold" }}>
           {isPerfect ? "¡Perfecto!" : "¡Lección completada!"}
         </Typography>
-
         <Typography variant="body1">
           {isPerfect
             ? "¡Has completado la lección sin errores!"
             : `Has completado la lección con ${livesRemaining} ${livesRemaining === 1 ? "vida" : "vidas"} restante${livesRemaining === 1 ? "" : "s"}.`}
         </Typography>
-
         <Box
           sx={{
             width: "100%",
             height: 12,
-            bgcolor: "rgba(255,255,255,0.1)",
+            // CAMBIO: Fondo más sutil
+            bgcolor: "rgba(92, 124, 250, 0.1)",
             borderRadius: 6,
             mb: 4,
           }}
@@ -49,12 +47,11 @@ export default function CompletionScreen({ score, livesRemaining, onRestart }: C
             sx={{
               width: `${score}%`,
               height: "100%",
-              bgcolor: isPerfect ? "#FFD700" : "#58CC02",
+              bgcolor: isPerfect ? "#d69e2e" : "#5c7cfa", // CAMBIO: Colores más suaves
               borderRadius: 6,
             }}
           />
         </Box>
-
         <Button
           variant="contained"
           color="secondary"

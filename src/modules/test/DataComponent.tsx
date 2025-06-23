@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { fetchFichas } from "./api-axios";
+import { Box, ImageList, ImageListItem } from "@mui/material";
 
 export const DataComponent = () => {
-    const [fichas, setFichas] = useState<any[]>([]);
-    console.log(fichas)
+    const [senas, setFichas] = useState<any[]>([]);
+    console.log(senas)
 
     useEffect(() => {
         const getData = async () => {
@@ -15,15 +16,15 @@ export const DataComponent = () => {
     }, []);
 
     return (
-        <>
+        <Box sx={{ display: 'grid', placeItems: 'center', gap: 2 }}>
             <h1>Data Component</h1>
-            <ul>
-                {fichas.map((ficha) => (
-                    <li>
-                         <pre>{JSON.stringify(ficha, null, 2)}</pre>
-                    </li>
+            <ImageList>
+                {senas.map((sena) => (
+                    <ImageListItem>
+                        <img  src={`http://127.0.0.1:8000/${sena.url_img}`}  alt={sena.nombre} />
+                    </ImageListItem>
                 ))}
-            </ul>
-        </>
+            </ImageList>
+        </Box>
     );
 }; 

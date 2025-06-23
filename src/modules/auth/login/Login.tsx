@@ -67,7 +67,7 @@ export const Login = () => {
             console.log(response.data);
 
             // Redirigir al usuario a la página de inicio 
-            navigate("/learn/home");
+            navigate("/learn/inicio/usuario");
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Error al iniciar sesión:", error.message);

@@ -9,17 +9,39 @@ export default function QuestionPrompt({ badgeText, question }: QuestionPromptPr
   return (
     <Box sx={{ mb: 4 }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-        <Avatar sx={{ bgcolor: "primary.main", width: 24, height: 24, mr: 1 }}>
-          <Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "primary.main" }} />
+        <Avatar
+          sx={{
+            width: 24,
+            height: 24,
+            mr: 1,
+            // CAMBIO: Gradiente más suave
+            background: "linear-gradient(135deg, #5c7cfa 0%, #748ffc 100%)",
+          }}
+        >
+          <Box sx={{ width: 12, height: 12, borderRadius: "50%", bgcolor: "#ffffff" }} />
         </Avatar>
         <Typography
           variant="caption"
-          sx={{ color: "primary.main", fontWeight: "bold", textTransform: "uppercase", letterSpacing: 1 }}
+          sx={{
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            // CAMBIO: Color más suave sin gradiente para mejor legibilidad
+            color: "#5c7cfa",
+          }}
         >
           {badgeText}
         </Typography>
       </Box>
-      <Typography variant="h4" component="h1" sx={{ fontWeight: "bold" }}>
+      <Typography
+        variant="h4"
+        component="h1"
+        sx={{
+          fontWeight: "bold",
+          // CAMBIO: Color más suave y legible
+          color: "#2d3748",
+        }}
+      >
         {question}
       </Typography>
     </Box>

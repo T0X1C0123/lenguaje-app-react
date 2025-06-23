@@ -1,15 +1,26 @@
+export interface Sena {
+  id: number
+  nombre: string
+  descripcion: string
+  url_img: string
+  categoria: any
+  categorias_relacionadas: Array<{
+    id: number
+    nombre: string
+  }>
+}
+
 export interface Question {
   id: number
   text: string
   correctOptionId: number
-  options: Option[]
+  options: QuizOption[]
   isNew?: boolean
 }
 
-export interface Option {
+export interface QuizOption {
   id: number
-  label: string
-  iconType: "milk" | "coffee" | "water"
+  sena: Sena
 }
 
 export interface QuizState {
@@ -20,5 +31,7 @@ export interface QuizState {
   isCorrect: boolean | null
   selectedOption: number | null
   completed: boolean
-  gameOver: boolean // New property to track game over state
+  gameOver: boolean
+  loading: boolean
+  error: string | null
 }

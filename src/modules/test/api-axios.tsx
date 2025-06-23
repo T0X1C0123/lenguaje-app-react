@@ -3,7 +3,7 @@ import axios from 'axios';
 // import { OrganizacionInterface } from './organizacionInterface';
 
 // Define la URL base de la API
-const API_URL = "http://127.0.0.1:8000/api/señas";
+const API_URL = "http://127.0.0.1:8000/api/senas";
 
 
 // Función para obtener el token de autenticación
@@ -31,7 +31,8 @@ export const fetchFichas = async (): Promise<any> => {
     const response = await axios.get<any>(API_URL, {
       headers: getAuthHeaders(),
     });
-    return response.data;
+    
+    return response.data.data;
 
   } catch (error) {
     console.error("Error fetching fichas:", error);

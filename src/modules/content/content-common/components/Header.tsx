@@ -20,7 +20,7 @@ export const Header = () => {
                     <IconButton>
                         <Avatar  />
                     </IconButton>
-                </Box>
+                </Box> 
                 <DrawerComponent open={drawerOpen} onClose={() => toggleDrawer(false)} />
             </Toolbar>
         </AppBar>

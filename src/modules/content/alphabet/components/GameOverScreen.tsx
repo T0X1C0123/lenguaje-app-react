@@ -21,21 +21,19 @@ export default function GameOverScreen({ score, onRestart }: GameOverScreenProps
           gap: 4,
         }}
       >
-        <Frown size={80} color="#FF4B4B" />
-
-        <Typography variant="h4" component="h1" sx={{ fontWeight: "bold", color: "#FF4B4B" }}>
+        <Frown size={80} color="#e53e3e" /> {/* CAMBIO: Rojo más suave */}
+        <Typography variant="h4" component="h1" sx={{ fontWeight: "bold", color: "#e53e3e" }}>
           ¡Fin del juego!
         </Typography>
-
         <Typography variant="body1">
           Has perdido todas tus vidas. ¡Inténtalo de nuevo para mejorar tu puntuación!
         </Typography>
-
         <Box
           sx={{
             width: "100%",
             height: 12,
-            bgcolor: "rgba(255,255,255,0.1)",
+            // CAMBIO: Fondo más sutil
+            bgcolor: "rgba(92, 124, 250, 0.1)",
             borderRadius: 6,
             mb: 4,
           }}
@@ -44,16 +42,14 @@ export default function GameOverScreen({ score, onRestart }: GameOverScreenProps
             sx={{
               width: `${score}%`,
               height: "100%",
-              bgcolor: "#FF4B4B",
+              bgcolor: "#e53e3e", // CAMBIO: Rojo más suave
               borderRadius: 6,
             }}
           />
         </Box>
-
         <Typography variant="h6" sx={{ mb: 2 }}>
           Puntuación final: {Math.round(score)}%
         </Typography>
-
         <Button
           variant="contained"
           onClick={onRestart}
@@ -63,9 +59,9 @@ export default function GameOverScreen({ score, onRestart }: GameOverScreenProps
             py: 1.5,
             fontWeight: "bold",
             fontSize: "1.1rem",
-            bgcolor: "#FF4B4B",
+            bgcolor: "#e53e3e", // CAMBIO: Rojo más suave
             "&:hover": {
-              bgcolor: "#E03A3A",
+              bgcolor: "#c53030", // CAMBIO: Hover más suave
             },
           }}
         >

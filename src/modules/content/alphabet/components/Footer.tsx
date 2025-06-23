@@ -25,15 +25,27 @@ export default function Footer({
 }: FooterProps) {
   // Determine check button text based on state
   let buttonText = checkLabel
-  let buttonColor = "#58CC02"
 
   if (answered) {
     buttonText = isCorrect ? "¡CORRECTO!" : "INCORRECTO"
-    buttonColor = isCorrect ? "#58CC02" : "#FF4B4B"
   }
 
   return (
-    <Box sx={{ p: 2, display: "flex", justifyContent: "space-between" }}>
+    <Box
+      sx={{
+        p: 2,
+        display: "flex",
+        justifyContent: "space-between",
+        // CAMBIO: Fondo más sutil
+        // bgcolor: "rgba(248, 250, 255, 0.95)",
+        bgcolor: '#EBF4FF',
+        backgroundImage: `
+          linear-gradient(135deg, rgba(92, 124, 250, 0.03) 0%, rgba(116, 143, 252, 0.03) 100%)
+        `,
+        borderTop: "1px solid rgba(92, 124, 250, 0.12)", // CAMBIO: Borde más sutil
+        backdropFilter: "blur(8px)",
+      }}
+    >
       <Button
         variant="outlined"
         onClick={onSkip}
@@ -41,9 +53,14 @@ export default function Footer({
         sx={{
           borderRadius: 4,
           px: 3,
-          color: isSkipDisabled ? "rgba(255,255,255,0.3)" : "text.secondary",
-          borderColor: "rgba(255,255,255,0.1)",
+          // CAMBIO: Colores más suaves
+          color: isSkipDisabled ? "rgba(92, 124, 250, 0.4)" : "#718096",
+          borderColor: "rgba(92, 124, 250, 0.2)",
           fontWeight: "bold",
+          "&:hover": {
+            borderColor: "#5c7cfa",
+            bgcolor: "rgba(92, 124, 250, 0.04)",
+          },
         }}
       >
         {skipLabel}
@@ -56,10 +73,18 @@ export default function Footer({
           borderRadius: 4,
           px: 3,
           fontWeight: "bold",
-          bgcolor: isCheckDisabled ? "rgba(255,255,255,0.1)" : buttonColor,
-          color: isCheckDisabled ? "rgba(255,255,255,0.3)" : "#0A1019",
+          bgcolor: (() => {
+            if (isCheckDisabled) return "rgba(92, 124, 250, 0.15)" // CAMBIO: Azul muy sutil
+            if (answered) return isCorrect ? "#38a169" : "#e53e3e" // CAMBIO: Colores más suaves
+            return "#5c7cfa" // CAMBIO: Azul más suave
+          })(),
+          color: isCheckDisabled ? "rgba(92, 124, 250, 0.6)" : "#ffffff",
           "&:hover": {
-            bgcolor: isCheckDisabled ? "rgba(255,255,255,0.1)" : buttonColor,
+            bgcolor: (() => {
+              if (isCheckDisabled) return "rgba(92, 124, 250, 0.15)"
+              if (answered) return isCorrect ? "#2f855a" : "#c53030" // CAMBIO: Hover más suave
+              return "#4c63d2" // CAMBIO: Hover azul más suave
+            })(),
           },
         }}
       >

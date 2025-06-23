@@ -3,6 +3,7 @@ import MenuIcon from "@mui/icons-material/Menu"
 import { Link } from "react-router";
 import { DrawerComponent } from "./DrawerComponent";
 import { useState } from "react";
+import imagen from "../../../assets/lenguaje-senas-6.jpg";
 
 export const Navbar = () => {
     const theme = useTheme();
@@ -17,10 +18,10 @@ export const Navbar = () => {
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" color="default" sx={{ bgcolor: "background.default" }}>
                 <Container maxWidth="lg">
-                    <Toolbar sx={{ justifyContent: "space-between", alignItems: "center" }}>
-                        <Typography variant="h6" component="div" sx={{ my: 2, fontWeight: "700", color: "primary.main", fontSize: { xs: "1.25rem", md: "1.5rem" } }}>
+                    <Toolbar sx={{ justifyContent: "end", alignItems: "center" }}>
+                        {/* <Typography variant="h6" component="div" sx={{ my: 2, fontWeight: "700", color: "primary.main", fontSize: { xs: "1.25rem", md: "1.5rem" } }}>
                             Logo
-                        </Typography>
+                        </Typography> */}
 
                         {/* Botones de autenticación para pantallas grandes */}
                         {!isMobile && (
