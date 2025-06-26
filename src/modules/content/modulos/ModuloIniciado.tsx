@@ -13,36 +13,36 @@ const ModuloIniciado = () => {
 
   const lessons = [
     {
+      lessonId: 'abecedario',
       title: "Abecedario",
       description: "Aprende las letras del alfabeto en LSV",
       icon: <MenuBook fontSize="large" />,
-      progress: 0,
       difficulty: "Básico",
-      isLocked: false
+      route: '/aprendizaje/stepper/alfabeto'
     },
     {
+      lessonId: 'numeros',
       title: "Números",
       description: "Números del 1 al 100 en lenguaje de señas",
       icon: <Tag fontSize="large" />,
-      progress: 0,
       difficulty: "Básico",
-      isLocked: true
+      route: '#'
     },
     {
+      lessonId: 'dias-semana',
       title: "Días de la Semana",
       description: "Los siete días de la semana en LSV",
       icon: <MenuBook fontSize="large" />,
-      progress: 0,
       difficulty: "Básico",
-      isLocked: true
+      route: '#'
     },
     {
+      lessonId: 'meses-ano',
       title: "Meses del Año",
       description: "Los doce meses del año en LSV",
       icon: <MenuBook fontSize="large" />,
-      progress: 0,
       difficulty: "Básico",
-      isLocked: true
+      route: '#'
     }
   ];
 
@@ -63,7 +63,7 @@ const ModuloIniciado = () => {
               '&:hover': { bgcolor: '#E3F2FD' }
             }}
           >
-            Volver a al Inicio
+            Volver al Inicio
           </Button>
 
           <Typography 

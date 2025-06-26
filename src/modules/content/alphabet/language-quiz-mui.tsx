@@ -11,6 +11,7 @@ import CompletionScreen from "./components/CompletionScreen"
 import GameOverScreen from "./components/GameOverScreen"
 import { senasApi } from "./services/api"
 import { generateQuestions } from "./utils/quiz-generator"
+import { useProgress } from "../../../context/ProgressContext"
 import type { QuizState, Question } from "./types"
 
 type QuizAction =
@@ -98,6 +99,7 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
 export default function LanguageQuizMUI() {
   const [state, dispatch] = useReducer(quizReducer, initialState)
   const [questions, setQuestions] = useState<Question[]>([])
+  const { updateLessonProgress, completLesson } = useProgress()
 
   // Load questions from API
   useEffect(() => {
@@ -142,6 +144,20 @@ export default function LanguageQuizMUI() {
     }
   }, [state.answered, state.gameOver])
 
+  // Update lesson progress when quiz state changes
+  useEffect(() => {
+    if (state.progress > 0) {
+      updateLessonProgress('abecedario', state.progress)
+    }
+  }, [state.progress, updateLessonProgress])
+
+  // Complete lesson when quiz is completed successfully
+  useEffect(() => {
+    if (state.completed && state.lives > 0) {
+      completLesson('abecedario')
+    }
+  }, [state.completed, state.lives, completLesson])
+
   // Handle check answer with proper question data
   const handleCheckAnswer = () => {
     if (!state.selectedOption || !questions[state.currentQuestionIndex]) return
@@ -172,7 +188,7 @@ export default function LanguageQuizMUI() {
 
     try {
       const senas = await senasApi.getSenas()
-      const numQuestions = Math.min(10, senas.length)
+      const numQuestions = Math.min(4, senas.length)
       const generatedQuestions = generateQuestions(senas, numQuestions)
       setQuestions(generatedQuestions)
       dispatch({ type: "SET_LOADING", payload: false })
@@ -196,7 +212,6 @@ export default function LanguageQuizMUI() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            // CAMBIO: Gradientes más suaves y menos intensos
             backgroundImage: `
               radial-gradient(circle at 20% 20%, rgba(92, 124, 250, 0.06) 0%, transparent 50%),
               radial-gradient(circle at 80% 80%, rgba(116, 143, 252, 0.06) 0%, transparent 50%),
@@ -250,7 +265,7 @@ export default function LanguageQuizMUI() {
               <button
                 onClick={() => window.location.reload()}
                 style={{
-                  background: "#5c7cfa", // CAMBIO: Color más suave
+                  background: "#5c7cfa",
                   color: "white",
                   border: "none",
                   padding: "8px 16px",
@@ -327,7 +342,6 @@ export default function LanguageQuizMUI() {
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
-          // CAMBIO: Gradientes más suaves y sutiles
           backgroundImage: `
             radial-gradient(circle at 20% 20%, rgba(92, 124, 250, 0.06) 0%, transparent 50%),
             radial-gradient(circle at 80% 80%, rgba(116, 143, 252, 0.06) 0%, transparent 50%),

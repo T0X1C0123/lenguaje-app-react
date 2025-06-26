@@ -1,13 +1,16 @@
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { AppRouter } from "./routes/AppRouter";
 import { customThemeModules, theme } from "./styles/theme";
+import { ProgressProvider } from "./context/ProgressContext";
 
 const App = () => {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppRouter />
-    </ThemeProvider>
+    <ProgressProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <AppRouter />
+      </ThemeProvider>
+    </ProgressProvider>
   );
 }
 

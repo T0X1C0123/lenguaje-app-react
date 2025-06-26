@@ -1,34 +1,44 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box, Button, LinearProgress, Chip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Lock } from '@mui/icons-material';
+import { Lock, CheckCircle } from '@mui/icons-material';
 import { difficultyColors } from '../../../../styles/theme';
 import { useNavigate } from 'react-router';
+import { useProgress } from '../../../../context/ProgressContext';
 
 interface LessonCardProps {
+  lessonId: string;
   title: string;
   description: string;
   icon: React.ReactNode;
-  progress: number;
   difficulty: string;
   moduleColor: string;
-  isLocked?: boolean;
+  route?: string;
 }
 
 const LessonCard: React.FC<LessonCardProps> = ({
+  lessonId,
   title,
   description,
   icon,
-  progress,
   difficulty,
   moduleColor,
-  isLocked = false
+  route
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { isLessonUnlocked, getLessonProgress, isLessonCompleted } = useProgress();
+  
+  const isUnlocked = isLessonUnlocked(lessonId);
+  const progress = getLessonProgress(lessonId);
+  const isCompleted = isLessonCompleted(lessonId);
+
   const handleLessonClick = () => {
-    navigate('/aprendizaje/stepper/alfabeto');
+    if (isUnlocked && route) {
+      navigate(route);
+    }
   };
+
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'Básico': return difficultyColors.basico;
@@ -42,10 +52,30 @@ const LessonCard: React.FC<LessonCardProps> = ({
     <Card 
       sx={{ 
         height: '100%',
-        opacity: isLocked ? 0.6 : 1,
-        cursor: isLocked ? 'not-allowed' : 'default'
+        opacity: isUnlocked ? 1 : 0.6,
+        cursor: isUnlocked ? 'pointer' : 'not-allowed',
+        position: 'relative',
+        border: isCompleted ? `2px solid ${moduleColor}` : 'none',
       }}
+      onClick={handleLessonClick}
     >
+      {isCompleted && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -8,
+            right: -8,
+            bgcolor: moduleColor,
+            borderRadius: '50%',
+            p: 0.5,
+            zIndex: 1,
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          }}
+        >
+          <CheckCircle sx={{ color: 'white', fontSize: 24 }} />
+        </Box>
+      )}
+
       <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
           <Box
@@ -53,7 +83,7 @@ const LessonCard: React.FC<LessonCardProps> = ({
               width: 60,
               height: 60,
               borderRadius: 2,
-              bgcolor: isLocked ? '#ccc' : moduleColor,
+              bgcolor: isUnlocked ? moduleColor : '#ccc',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -61,14 +91,14 @@ const LessonCard: React.FC<LessonCardProps> = ({
               position: 'relative'
             }}
           >
-            {isLocked ? <Lock fontSize="large" /> : icon}
+            {isUnlocked ? icon : <Lock fontSize="large" />}
           </Box>
           <Chip 
-            label={isLocked ? "Bloqueado" : difficulty}
+            label={isUnlocked ? difficulty : "Bloqueado"}
             size="small"
             sx={{ 
-              bgcolor: isLocked ? '#f5f5f5' : getDifficultyColor(difficulty),
-              color: isLocked ? '#999' : theme.palette.text.secondary,
+              bgcolor: isUnlocked ? getDifficultyColor(difficulty) : '#f5f5f5',
+              color: isUnlocked ? theme.palette.text.secondary : '#999',
             }}
           />
         </Box>
@@ -78,7 +108,7 @@ const LessonCard: React.FC<LessonCardProps> = ({
           component="h3" 
           sx={{ 
             mb: 2,
-            color: isLocked ? '#999' : theme.palette.text.primary,
+            color: isUnlocked ? theme.palette.text.primary : '#999',
           }}
         >
           {title}
@@ -87,23 +117,23 @@ const LessonCard: React.FC<LessonCardProps> = ({
         <Typography 
           variant="body2" 
           sx={{ 
-            color: isLocked ? '#bbb' : theme.palette.text.secondary,
+            color: isUnlocked ? theme.palette.text.secondary : '#bbb',
             mb: 3,
             flexGrow: 1
           }}
         >
-          {isLocked ? 'Completa la lección anterior para desbloquear' : description}
+          {isUnlocked ? description : 'Completa la lección anterior para desbloquear'}
         </Typography>
 
         <Box sx={{ mt: 'auto' }}>
-          {!isLocked && (
+          {isUnlocked && (
             <>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
                   Progreso
                 </Typography>
                 <Typography variant="body2" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-                  {progress}%
+                  {Math.round(progress)}%
                 </Typography>
               </Box>
               
@@ -112,8 +142,11 @@ const LessonCard: React.FC<LessonCardProps> = ({
                 value={progress}
                 sx={{
                   mb: 3,
+                  height: 8,
+                  borderRadius: 4,
                   '& .MuiLinearProgress-bar': {
                     bgcolor: moduleColor,
+                    borderRadius: 4,
                   }
                 }}
               />
@@ -121,20 +154,19 @@ const LessonCard: React.FC<LessonCardProps> = ({
           )}
 
           <Button
-            onClick={handleLessonClick}
             variant="contained"
             fullWidth
-            disabled={isLocked}
+            disabled={!isUnlocked}
             sx={{
-              bgcolor: isLocked ? '#ccc' : moduleColor,
+              bgcolor: isUnlocked ? moduleColor : '#ccc',
               color: 'white',
               py: 1.5,
               borderRadius: 2,
               fontWeight: 'bold',
               fontSize: '1rem',
               textTransform: 'none',
-              cursor: isLocked ? 'not-allowed' : 'pointer',
-              '&:hover': !isLocked ? {
+              cursor: isUnlocked ? 'pointer' : 'not-allowed',
+              '&:hover': isUnlocked ? {
                 bgcolor: moduleColor,
                 opacity: 0.9
               } : {},
@@ -144,11 +176,15 @@ const LessonCard: React.FC<LessonCardProps> = ({
               }
             }}
           >
-            {isLocked ? (
+            {!isUnlocked ? (
               <>
                 <Lock sx={{ mr: 1, fontSize: '1rem' }} />
                 Lección Bloqueada
               </>
+            ) : isCompleted ? (
+              '✓ Completada'
+            ) : progress > 0 ? (
+              'Continuar Lección'
             ) : (
               '→ Comenzar Lección'
             )}
@@ -160,95 +196,3 @@ const LessonCard: React.FC<LessonCardProps> = ({
 };
 
 export default LessonCard;
-
-
-
-
-{/* <Card sx={{ minHeight: '100%' }}>
-      <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-          <Box
-            sx={{
-              width: 60,
-              height: 60,
-              borderRadius: 2,
-              bgcolor: moduleColor,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white'
-            }}
-          >
-            {icon}
-          </Box>
-          <Chip 
-            label={difficulty}
-            size="small"
-            sx={{ 
-              bgcolor: getDifficultyColor(difficulty),
-              color: theme.palette.text.secondary,
-            }}
-          />
-        </Box>
-
-        <Typography 
-          variant="h6" 
-          component="h3" 
-          sx={{ 
-            mb: 2,
-            color: theme.palette.text.primary,
-          }}
-        >
-          {title}
-        </Typography>
-
-        <Typography 
-          variant="body2" 
-          sx={{ 
-            color: theme.palette.text.secondary,
-            mb: 3,
-            flexGrow: 1
-          }}
-        >
-          {description}
-        </Typography>
-
-        <Box sx={{ mt: 'auto' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="body2" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-              Progreso
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-              {progress}%
-            </Typography>
-          </Box>
-          
-          <LinearProgress
-            variant="determinate"
-            value={progress}
-            sx={{
-              mb: 3,
-              '& .MuiLinearProgress-bar': {
-                bgcolor: moduleColor,
-              }
-            }}
-          />
-
-          <Button
-            onClick={() => navigate('/learn/stepper')}
-            variant="contained"
-            fullWidth
-            sx={{
-              bgcolor: moduleColor,
-              color: 'white',
-              '&:hover': {
-                bgcolor: moduleColor,
-                opacity: 0.9
-              },
-            }}
-          >
-            → Comenzar Lección
-          </Button>
-        </Box>
-      </CardContent>
-    </Card> */}

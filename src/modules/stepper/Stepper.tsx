@@ -8,9 +8,23 @@ import { themeStepper } from "../../styles/theme"
 import { SignPage } from "./pages/SignPage"
 import { NavigationProvider } from "./context/NavigationContext"
 import { useLettersData } from "./hooks/useLettersData"
+import { useProgress } from "../../context/ProgressContext"
+import { useEffect } from "react"
 
 const AppContent: React.FC = () => {
   const { letters, loading, error, refetchLetters } = useLettersData()
+  const { updateLessonProgress } = useProgress()
+
+  // Update progress as user navigates through letters
+  useEffect(() => {
+    if (letters.length > 0) {
+      // Calculate progress based on letters viewed (this is a simple example)
+      // You might want to implement a more sophisticated progress tracking
+      const progressPerLetter = 100 / letters.length
+      const currentProgress = progressPerLetter * 0.5 // 50% for viewing, 50% for quiz completion
+      updateLessonProgress('abecedario', currentProgress)
+    }
+  }, [letters.length, updateLessonProgress])
 
   if (loading) {
     return (
