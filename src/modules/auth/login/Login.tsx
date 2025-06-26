@@ -15,6 +15,7 @@ export const Login = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [errors, setErrors] = useState<Partial<LoginFormData>>({});
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
     
     const handleTogglePasswordVisibility = () => {
@@ -44,9 +45,11 @@ export const Login = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        if (validateForm()) {
-
+        if (!validateForm()) {
+            return;
         }
+
+        setIsLoading(true);
 
         try {
             const response = await axios.post(
@@ -56,7 +59,7 @@ export const Login = () => {
                     password,
                 },
                 {
-                    // timeout: 10000, // Tiempo de espera de 10 segundos
+                    timeout: 10000,
                     headers: {
                         "Content-Type": "application/json",
                     },
@@ -75,16 +78,22 @@ export const Login = () => {
                     // El servidor respondió con un código de estado fuera del rango 2xx
                     console.error("Datos de la respuesta:", error.response.data);
                     console.error("Estado de la respuesta:", error.response.status);
+                    setErrors({ email: "Credenciales inválidas" });
                 } else if (error.request) {
                     // La solicitud fue hecha pero no se recibió respuesta
                     console.error("No se recibió respuesta del servidor");
+                    setErrors({ email: "Error de conexión. Verifique que el servidor esté ejecutándose." });
                 } else {
                     // Algo más ocurrió al configurar la solicitud
                     console.error("Error al configurar la solicitud:", error.message);
+                    setErrors({ email: "Error inesperado al procesar la solicitud" });
                 }
             } else {
                 console.error("Error inesperado:", error);
+                setErrors({ email: "Error inesperado" });
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -106,10 +115,12 @@ export const Login = () => {
                         size="small" 
                         variant="outlined" 
                         type="email" 
+                        value={email}
                         placeholder="m@ejemplo.com"
                         onChange={(e) => setEmail(e.target.value)}
                         error={!!errors.email}
                         helperText={errors.email}
+                        disabled={isLoading}
                     />
                 </Box>
                 <Box  mb={3}>
@@ -126,9 +137,11 @@ export const Login = () => {
                         size="small" 
                         variant="outlined" 
                         type={showPassword ? "text" : "password"}
+                        value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         error={!!errors.password}
                         helperText={errors.password}
+                        disabled={isLoading}
                         slotProps={{
                             input: {
                                 endAdornment: (
@@ -137,6 +150,7 @@ export const Login = () => {
                                             aria-label="toggle password visibility"
                                             onClick={handleTogglePasswordVisibility}
                                             edge="end" 
+                                            disabled={isLoading}
                                         >
                                             {showPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
@@ -146,8 +160,13 @@ export const Login = () => {
                         }} 
                     />
                 </Box>
-                <Button fullWidth variant="contained" type="submit" >
-                    Iniciar sesión
+                <Button 
+                    fullWidth 
+                    variant="contained" 
+                    type="submit" 
+                    disabled={isLoading}
+                >
+                    {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
                 </Button>
                 <Box textAlign="center" mt={2}>
                     <Typography variant="body2" color="text.secondary">

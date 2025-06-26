@@ -19,10 +19,10 @@ export const Signup = () => {
     const [apellido, setLastName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [ci, setCedula] = useState<number>();
+    const [ci, setCedula] = useState<string>("");
     const [errors, setErrors] = useState<Partial<SignupFormData>>({});
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate(); 
-
 
     const handleTogglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -30,23 +30,22 @@ export const Signup = () => {
 
     const validateForm = () => {
         const newErrors: Partial<SignupFormData> = {};
-        console.log(newErrors);
 
         if (!ci) {
-             newErrors.ci = "La cédula es requerido";
-        } else if (isNaN(ci)) {
-            newErrors.ci = "La cédula debe ser un número válido";
+             newErrors.ci = "La cédula es requerida";
+        } else if (!/^\d+$/.test(ci)) {
+            newErrors.ci = "La cédula debe contener solo números";
         }
 
         if (!name) {
              newErrors.name = "El nombre es requerido";
-        } else if (!/^[a-zA-Z]+$/.test(name)) {
+        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(name)) {
             newErrors.name = "El nombre debe contener solo caracteres alfabéticos";
         }
 
         if (!apellido) {
              newErrors.apellido = "El apellido es requerido";
-        } else if (!/^[a-zA-Z]+$/.test(apellido)) {
+        } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(apellido)) {
             newErrors.apellido = "El apellido debe contener solo caracteres alfabéticos";
         }
 
@@ -70,15 +69,17 @@ export const Signup = () => {
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        if(validateForm()) {
-
+        if (!validateForm()) {
+            return;
         }
+
+        setIsLoading(true);
 
         try {
             const response = await axios.post(
                 "http://127.0.0.1:8000/api/users",
                 {
-                    ci,
+                    ci: parseInt(ci),
                     name,
                     apellido,
                     email,
@@ -103,14 +104,28 @@ export const Signup = () => {
                 if (error.response) {
                     console.error("Datos de la respuesta:", error.response.data);
                     console.error("Estado de la respuesta:", error.response.status);
+                    
+                    // Manejar errores específicos del servidor
+                    if (error.response.status === 422) {
+                        setErrors({ email: "Los datos proporcionados no son válidos" });
+                    } else if (error.response.status === 409) {
+                        setErrors({ email: "El usuario ya existe" });
+                    } else {
+                        setErrors({ email: "Error del servidor" });
+                    }
                 } else if (error.request) {
                     console.error("No se recibió respuesta del servidor");
+                    setErrors({ email: "Error de conexión. Verifique que el servidor esté ejecutándose." });
                 } else {
                     console.error("Error al configurar la solicitud:", error.message);
+                    setErrors({ email: "Error inesperado al procesar la solicitud" });
                 }
             } else {
                 console.error("Error inesperado:", error);
+                setErrors({ email: "Error inesperado" });
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -131,25 +146,16 @@ export const Signup = () => {
                         fullWidth
                         size="small" 
                         variant="outlined" 
-                        type="number"
+                        type="text"
                         value={ci}
-                        onChange={(e) => setCedula(Number(e.target.value))}
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '');
+                            setCedula(value);
+                        }}
                         error={!!errors.ci}
                         helperText={errors.ci}
-                        inputProps={{ min: 0 }}
-                        sx={{
-                            '& input[type=number]': {
-                                MozAppearance: 'textfield',
-                                '&::-webkit-outer-spin-button': {
-                                    WebkitAppearance: 'none',
-                                    margin: 0,
-                                },
-                                '&::-webkit-inner-spin-button': {
-                                    WebkitAppearance: 'none',
-                                    margin: 0,
-                                },
-                            },
-                        }}
+                        disabled={isLoading}
+                        placeholder="Ingrese su número de cédula"
                     />
                 </Box>
                 <Box  mb={2.5}>
@@ -160,11 +166,12 @@ export const Signup = () => {
                         fullWidth
                         size="small" 
                         variant="outlined" 
-                        type="name" 
+                        type="text" 
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         error={!!errors.name}
                         helperText={errors.name}
+                        disabled={isLoading}
                     />
                 </Box>
                 <Box  mb={2.5}>
@@ -175,11 +182,12 @@ export const Signup = () => {
                         fullWidth
                         size="small" 
                         variant="outlined" 
-                        type="apellido" 
+                        type="text" 
                         value={apellido}
                         onChange={(e) => setLastName(e.target.value)}
                         error={!!errors.apellido}
                         helperText={errors.apellido}
+                        disabled={isLoading}
                     />
                 </Box>
                 <Box  mb={2.5}>
@@ -196,10 +204,11 @@ export const Signup = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         error={!!errors.email}
                         helperText={errors.email}
+                        disabled={isLoading}
                     />
                 </Box>
                 <Box  mb={3}>
-                    <Box>
+                    <Box mb={1}>
                         <Typography variant="body1" fontWeight="medium">
                             Contraseña <span style={{ color: 'red' }}>(*)</span>
                         </Typography>
@@ -213,6 +222,7 @@ export const Signup = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         error={!!errors.password}
                         helperText={errors.password}
+                        disabled={isLoading}
                         slotProps={{
                             input: {
                                 endAdornment: (
@@ -221,6 +231,7 @@ export const Signup = () => {
                                             aria-label="toggle password visibility"
                                             onClick={handleTogglePasswordVisibility}
                                             edge="end" 
+                                            disabled={isLoading}
                                         >
                                             {showPassword ? <VisibilityOff /> : <Visibility />}
                                         </IconButton>
@@ -230,8 +241,13 @@ export const Signup = () => {
                         }}
                     />
                 </Box>
-                <Button fullWidth variant="contained" type="submit" >
-                    Crear cuenta
+                <Button 
+                    fullWidth 
+                    variant="contained" 
+                    type="submit" 
+                    disabled={isLoading}
+                >
+                    {isLoading ? "Creando cuenta..." : "Crear cuenta"}
                 </Button>
                 <Box textAlign="center" mt={2}>
                     <Typography variant="body2" color="text.secondary">
